@@ -1,0 +1,388 @@
+
+<main id="js-page-content" role="main" class="page-content">
+<div class="subheader">
+        <h1 class="subheader-title">
+            <i class='subheader-icon fal fa-table'></i> Inventory Management
+        </h1>
+        <div class="subheader-block" id="loggedIn-user">
+            <i class='subheader-icon fal fa-table'></i> <%= "#{String.capitalize(@conn.assigns.user.first_name)}"%> <%= "#{String.capitalize(@conn.assigns.user.last_name)}"%>  | Invet_HuB
+        </div>
+</div>
+
+    <!-- ####################################################### FLASH ################## -->
+    <div class="row">
+        <div class="col-md-12 col-lg-offset-2">
+            <div class="form-group">
+                <%= if get_flash(@conn, :info) do %>
+                    <div class="alert alert-info alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    <%= get_flash(@conn, :info) %>
+                    </div>
+                <% end %>
+                <%= if get_flash(@conn, :error) do %>
+                    <div class="alert alert-danger alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    Opps! <%= get_flash(@conn, :error) %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <!-- ################################################################################ -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div class="panel-hdr">
+                    <h2>
+                       <i class='subheader-icon fal fa-table'> Inventory management</i>
+                    </h2>
+                    <div class="panel-toolbar">
+                        <button class="btn btn-sm btn-primary waves-effect waves-themed" data-toggle="modal" data-target="#default-example-modal-lg-center">Add Inventory</button>
+                    </div>
+                </div>
+
+                <div class="panel-container show">
+                    <div class="panel-content">
+
+                        <input type="hidden" name="_csrf_token" id="csrf" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                        <table id="dt-invet-table" class="table table-bordered table-hover table-striped w-100">
+                            <thead class="p-3 bg-primary-300 rounded overflow-hidden position-relative text-white mb-g">
+                                <tr>
+                                     <th>Branch</th>
+                                      <th>Quantity</th>
+                                      <th>Size (R)</th>
+                                      <th>price (ZMK)</th>
+                                      <th>Returns</th>
+                                      <th>Total (ZMK)</th>
+                                      <th>Date Created</th>
+                                      <th>Last Modified</th>
+                                      <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <%= for inventory <- inventory() do %>
+                                <tr>
+                                    <td><%= inventory.branch%></td>
+                                     <td><%= inventory.quantity %></td>
+                                     <td><%= inventory.size %></td>
+                                     <td><%= inventory.price %></td>
+                                      <td><%= inventory.returns %></td>
+                                      <td><%= inventory.total %></td>
+                                      <td><%= "#{inventory.inserted_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+                                     <td><%= "#{inventory.updated_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+                                   <td class="text-center">
+                                     <button class="btn btn-primary btn-xs" data-toggle="dropdown" style="margin-top:0px !important; padding-top: 0px !important;">Options</button>
+                                     <div class="dropdown-menu dropdown-menu-animated dropdown-menu-right position-absolute pos-top">
+                                         <a href="<%= inventory.id%>" class="dropdown-item text-success" data-id="<%= inventory.id %>" data-price="<%= inventory.price %>" data-quantity="<%= inventory.quantity %>" data-size="<%= inventory.size %>" data-branch="<%= inventory.branch%>" data-toggle="modal" data-target="#edit">Update Stock</a>
+                                          <a  data-id="<%= inventory.id %>" class="js-activate-stock dropdown-item text-danger">Clear Stock</a>
+                                          <a  data-id="<%= inventory.id %>" class="dropdown-item text-primary"  data-toggle="modal" data-target="#default-example" href="<%= inventory.id%>" class="dropdown-item text-success" data-price="<%= inventory.price %>" data-quantity="<%= inventory.quantity %>" data-size="<%= inventory.size %>" data-branch="<%= inventory.branch%>">Move stock</a>
+                                          <a  data-id="<%= inventory.id %>" class="js-delete-inventory dropdown-item text-danger">Delete</a>
+                                     </div>
+                                 </td>
+                                </tr>
+                                <% end %>
+                            </tbody>
+                        </table>
+                </div>
+            </div>
+        </div>
+    </div>
+   </div>
+</main>
+<!-- ############################################ ADD INVENTORY MODAL ######################################### -->
+
+<div class="modal fade" id="default-example-modal-lg-center" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Inventory Item <i class='subheader-icon fal fa-user-circle'></i></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" action="<%= Routes.inventory_path(@conn, :add)%>" method="POST">
+                    <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                    <div class="form-group">
+                        <label class="form-label">Product Information</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fal fa-barcode"></i></span>
+                            </div>
+                            <input type="hidden" name="id" id="id" class="form-control" >
+                            <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Quantity" required="required">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                    <label class="form-label">Branch</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fal fa-qrcode"></i></span>
+                        </div>
+
+                        <select class="custom-select form-control" name="branch" required="required">
+                            <option value="" disabled selected hidden>Branch</option>
+                            <%= for branch <- branch() do %>
+                            <option value="<%= branch.branch%>"><%= branch.branch %> </option>
+                            <% end %>
+                        </select>
+                    </div>
+                </div>
+
+                   <div class="form-group">
+                    <label class="form-label">Product Variations</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fal fa-qrcode"></i></span>
+                        </div>
+                        <select class="custom-select form-control" id="variation_select" name="size" >
+                            <option value="" disabled selected hidden>Size</option>
+                            <%= for variation <- variation() do %>
+                            <option value="<%= variation.size%>"><%= variation.size %> </option>
+                            <% end %>
+
+                        </select>
+                         <select class="custom-select form-control" name="price" id="price">
+                            <option value="" disabled selected hidden>Price</option>
+                            <%= for variation <- variation() do %>
+                            <option value="<%= variation.price%>"><%= variation.price %> </option>
+                            <% end %>
+                        </select>
+                        <input type="hidden" name="total" class="form-control" id="product" required="required">
+                       <!-- <input type="hidden" name="id" class="form-control" id="id" value=" >-->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" onclick="calc()" class="btn btn-primary">Add Inventory</button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ############################################ EDIT INVENTORY MODAL ######################################### -->
+<%= for inventory <- inventory() do %>
+<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Inventory Item <i class='subheader-icon fal fa-user-circle'></i></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" action="<%= Routes.inventory_path(@conn, :update)%>" method="POST">
+                    <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                    <div class="form-group">
+                        <label class="form-label">Product Information</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fal fa-barcode"></i></span>
+                            </div>
+                            <input type="hidden" name="id" id="id" value="<%= inventory.id %>">
+                            <input type="number" name="quantity" id="quantity" class="form-control" value="<%= inventory.quantity %>" placeholder="Quantity" required="required">
+
+                        </div>
+                    </div>
+
+
+                   <div class="form-group">
+                    <label class="form-label">Product Variations</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fal fa-qrcode"></i></span>
+                        </div>
+                        <%= for variation <- variation() do %>
+                        <select class="custom-select form-control" id="variation_select" name="price" >
+                            <option value="" disabled selected hidden><%= variation.price %> </option>
+                            
+                            <option value="<%= variation.price%>"><%= variation.price %> </option>
+                            
+                        </select>
+                        <% end %>
+                        <input type="text" name="returns" id="returns" class="form-control" value="<%= inventory.returns %>" placeholder="Returns">
+
+
+
+
+                       <!-- <input type="hidden" name="id" class="form-control" id="id" value=" >-->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">update Inventory</button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<% end %>
+<!-- ############################################ MOVE INVENTORY TO OTHER BRANCHES ######################################### -->
+<%= for inventory <- inventory() do %>  
+
+    <div class="modal fade" id="default-example" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Inventory Item <i class='subheader-icon fal fa-user-circle'></i></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" action="<%= Routes.inventory_path(@conn, :move_to_branch)%>" method="POST">
+                    <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fal fa-barcode"></i></span>
+                            </div>
+                            
+                            <input type="hidden" name="id" id="id" value="<%= inventory.id %>" class="form-control" >
+                            
+                        <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Quantity" value="<%= inventory.quantity %>" required="required">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                    <label class="form-label">Branch</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fal fa-qrcode"></i></span>
+                        </div>
+                      
+                            <select class="custom-select form-control" name="branch" required="required">
+                                <option value="" disabled selected hidden>Branch</option>
+                              <%= for branch <- branch() do %>
+                                <option value="<%= branch.branch%>"><%= branch.branch %> </option>
+                              <% end %>
+                            </select>
+                       
+                    </div>
+                </div>
+
+                   <div class="form-group">
+                    <label class="form-label">Product Variations</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fal fa-qrcode"></i></span>
+                        </div>
+                        
+                            <select class="custom-select form-control" id="variation_select" name="size" >
+                                <option value="" disabled selected hidden>Size</option>
+                              <%= for variation <- variation() do %>  
+                                <option value="<%= variation.size%>"><%= variation.size %> </option>
+                            
+                              <% end %>
+                            </select>
+                        
+                        
+                            <select class="custom-select form-control" name="price" id="price">
+                                <option value="" disabled selected hidden>Price</option>
+                              <%= for variation <- variation() do %>  
+                                <option value="<%= variation.price%>"><%= variation.price %> </option>
+                               <% end %>  
+                            </select>
+                       
+                      <!--  <input type="hidden" name="total" class="form-control" id="product" required="required"> -->
+                       <!-- <input type="hidden" name="id" class="form-control" id="id" value=" >-->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">move stock</button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+<% end %>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="<%= Routes.static_path(@conn, "/js/jquery.js") %>"></script>
+
+<script>
+       // Bulk Mandate Request Branches
+     // $('#variation_select').on('change', function () {
+    //    var selected = $(this).val().toLowerCase();
+   //     if (selected != '0') {
+   //         $('#price').show();
+          //  $('#price option').hide();  //hide all options initially
+        //    $('#price option:eq(0)').show();  //show the first option
+     //       $('#price option.' + selected).show();  //show options with the right class
+      //  } else {
+        //    $('#price').hide();
+          //  $('#price option').hide();
+        //}
+
+       //});
+
+       //var select1 = document.getElementById("variation_select");
+//       select2 = document.getElementById("price");
+       // select2.disabled = true;
+       // select1.addEventListener("change", e => select2.disabled = select1.value === "" ? true : false, false);
+
+        //console.log(select1);
+        //console.log(select2);
+
+</script>
+
+<script>
+$(document).ready(function(){
+//Deactivate msg Account
+  $('#edit').on('show.bs.modal', function (event){
+
+    var button = $(event.relatedTarget)
+    var id = button.data('id')
+    var branch = button.data('branch')
+    var price = button.data('price')
+    var size = button.data('size')
+    var quantity = button.data('quantity')
+
+    var modal = $(this)
+    modal.find('.modal-body #id').val(id);
+    modal.find('.modal-body #branch').val(branch);
+    modal.find('.modal-body #price').val(price);
+    modal.find('.modal-body #size').val(size);
+    modal.find('.modal-body #quantity').val(quantity);
+  });
+});
+</script>
+
+
+//move stock to another branch 
+
+<script>
+$(document).ready(function(){
+//Deactivate msg Account
+  $('#default-example').on('show.bs.modal', function (event){
+
+    var button = $(event.relatedTarget)
+    var id = button.data('id')
+    var branch = button.data('branch')
+    var price = button.data('price')
+    var size = button.data('size')
+    var quantity = button.data('quantity')
+
+    var modal = $(this)
+    modal.find('.modal-body #id').val(id);
+    modal.find('.modal-body #branch').val(branch);
+    modal.find('.modal-body #price').val(price);
+    modal.find('.modal-body #size').val(size);
+    modal.find('.modal-body #quantity').val(quantity);
+  });
+});
+</script>

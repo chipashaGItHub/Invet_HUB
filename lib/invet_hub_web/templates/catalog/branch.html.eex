@@ -1,0 +1,180 @@
+<main id="js-page-content" role="main" class="page-content">
+    <!-- ####################################################### FLASH ################## -->
+    <div class="row">
+        <div class="col-md-12 col-lg-offset-2">
+            <div class="form-group">
+                <%= if get_flash(@conn, :info) do %>
+                    <div class="alert alert-info alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    <%= get_flash(@conn, :info) %>
+                    </div>
+                <% end %>
+                <%= if get_flash(@conn, :error) do %>
+                    <div class="alert alert-danger alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    Opps! <%= get_flash(@conn, :error) %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <!-- ################################################################################ -->
+    <div class="subheader">
+        <h1 class="subheader-title">
+            <i class='subheader-icon fal fa-th-list'></i> Branch
+        </h1>
+
+        <div class="subheader-block" id="loggedIn-user">
+            <i class='subheader-icon fal fa-user'></i> <%= "#{String.capitalize(@conn.assigns.user.first_name)}"%> <%= "#{String.capitalize(@conn.assigns.user.last_name)}"%>  | Invet_HUB
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div class="panel-hdr">
+                    <h2>
+                       <i class='subheader-icon fal fa-th-list'> Branch</i>
+                    </h2>
+                    <div class="panel-toolbar">
+                        <button class="btn btn-sm btn-primary waves-effect waves-themed" data-toggle="modal" data-target="#add-branch">Add branch </button>
+                    </div>
+                </div>
+
+                <div class="panel-container show">
+                    <div class="panel-content">
+
+                        <!-- datatable start -->
+                        <input type="hidden" name="csrf" id="csrf" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                        <table id="dt-users" class="table table-bordered table-hover table-striped w-100">
+                            <thead class="p-3 bg-primary-300 rounded overflow-hidden position-relative text-white mb-g">
+                                <tr>
+                                     <th>Branch</th>
+                                      <th>Date Created</th>
+                                      <th>Last Modified</th>
+                                      <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <%= for branch <- branch() do %>
+                                <tr>
+                                    <td><%= branch.branch %> </td>
+                                    <td><%= "#{branch.inserted_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+                                     <td><%= "#{branch.updated_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+
+                                    <td class="text-center">
+                                     <button class="btn btn-primary btn-xs" data-toggle="dropdown" style="margin-top:0px !important; padding-top: 0px !important;">Options</button>
+                                     <div class="dropdown-menu dropdown-menu-animated dropdown-menu-right position-absolute pos-top">
+                                         <a  href="<%= branch.id %>" data-id="<%= branch.id %>" data-branch="<%= branch.branch %>" class="dropdown-item text-primary"  data-toggle="modal"  data-target="#edit-branch">Edit</a>
+                                            <a href="#" data-id="<%= branch.id %>" class="js-branch-delete dropdown-item text-danger">delete</a>
+                                     </div>
+                                 </td>
+                                </tr>
+                              <% end %>
+                            </tbody>
+                        </table>
+                        <!-- datatable end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ############################################ ADD USER MODAL ######################################### -->
+<div class="modal fade" id="add-branch" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Branch <i class='subheader-icon fal fa-user-circle'></i></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="<%= Routes.catalog_path(@conn, :add_branch)%>" method="POST">
+                    <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                    <div class="form-group">
+                        <label class="form-label">Branch Information</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fal fa-th-list"></i></span>
+                            </div>
+                            <input type="text" name="branch" class="form-control" placeholder="Branch" required="required">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"  class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Branch</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ############################################ EDIT MODAL ######################################### -->
+<%= for branch <- branch() do %>
+<div class="modal fade" id="edit-branch" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Branch <i class='subheader-icon fal fa-user-circle'></i></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+
+             <div class="modal-body">
+                <form class="form-horizontal" action="<%= Routes.catalog_path(@conn, :update_branch)%>" method="POST">
+                    <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                    <div class="form-group">
+                        <label class="form-label">Variations</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fal fa-th-list"></i></span>
+                            </div>
+                            <input type="text" name="branch" class="form-control" placeholder="branch" id="branch" value="<%= branch.branch %>" required="required">
+                            <input type="hidden" name="id" id="id" value="<%= branch.id %>" required="required">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Variations</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <% end %>
+
+<script src="<%= Routes.static_path(@conn, "/js/jquery.js") %>"></script>
+
+
+
+   <script>
+   $(document).ready(function(){
+     $('#edit-branch').on('show.bs.modal', function (event){
+       var button = $(event.relatedTarget)
+       var id = button.data('id')
+       var branch = button.data('branch')
+
+
+       var button = $(event.relatedTarget)
+       var id = button.data('id')
+       var size = button.data('size')
+       var price = button.data('price')
+
+
+
+       var modal = $(this)
+       modal.find('.modal-body #id').val(id);
+       modal.find('.modal-body #branch').val(branch);
+
+     });
+   });
+   </script>

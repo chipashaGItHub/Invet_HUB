@@ -1,0 +1,74 @@
+<main id="js-page-content" role="main" class="page-content">
+    <!-- ####################################################### FLASH ################## -->
+    <div class="row">
+        <div class="col-md-12 col-lg-offset-2">
+            <div class="form-group">
+                <%= if get_flash(@conn, :info) do %>
+                    <div class="alert alert-info alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    <%= get_flash(@conn, :info) %>
+                    </div>
+                <% end %>
+                <%= if get_flash(@conn, :error) do %>
+                    <div class="alert alert-danger alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    Opps! <%= get_flash(@conn, :error) %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <!-- ################################################################################ -->
+    <div class="subheader">
+        <h1 class="subheader-title">
+            <i class='subheader-icon fal fa-th-list'></i> System Reports
+        </h1>
+
+        <div class="subheader-block" id="loggedIn-user">
+            <i class='subheader-icon fal fa-user'></i> <%= "#{String.capitalize(@conn.assigns.user.first_name)}"%> <%= "#{String.capitalize(@conn.assigns.user.last_name)}"%>  | Invet_HUB
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div class="panel-hdr">
+                    <h2>
+                       <i class='subheader-icon fal fa-th-list'> Reports</i>
+                    </h2>
+                </div>
+
+                <div class="panel-container show">
+                    <div class="panel-content">
+
+                        <!-- datatable start -->
+                        <table id="dt-basic-example" class="table table-bordered table-hover table-striped w-100">
+                            <thead class="p-3 bg-primary-300 rounded overflow-hidden position-relative text-white mb-g">
+                                <tr>
+                                     <th>Branch Name</th>
+                                     <th>Total Goods</th>
+                                     <th>Total Profit (ZMK)</th>
+                                      <th>Date Created</th>
+                                      <th>Last Modified</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <%= for report <- @reports do %>
+                                <tr>
+                                    <td><%= report.branch %> </td>
+                                    <td><%= report.total %> </td>
+                                    <td><%= report.quantity %> </td>
+                                    <td><%= report.inserted_at %></td>
+                                     <td><%= report.updated_at %></td>
+                                </tr>
+                              <% end %>
+                            </tbody>
+                        </table>
+                        <!-- datatable end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+

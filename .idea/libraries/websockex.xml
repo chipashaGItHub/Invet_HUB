@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="websockex" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/websockex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/websockex/ebin" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/websockex/lib" />
+    </SOURCES>
+  </library>
+</component>

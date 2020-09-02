@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="chartkick" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/chartkick/ebin" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/chartkick/lib" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,79 @@
+<main id="js-page-content" role="main" class="page-content">
+    <!-- ####################################################### FLASH ################## -->
+    <div class="row">
+        <div class="col-md-12 col-lg-offset-2">
+            <div class="form-group">
+                <%= if get_flash(@conn, :info) do %>
+                    <div class="alert alert-info alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    <%= get_flash(@conn, :info) %>
+                    </div>
+                <% end %>
+                <%= if get_flash(@conn, :error) do %>
+                    <div class="alert alert-danger alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    Opps! <%= get_flash(@conn, :error) %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <!-- ################################################################################ -->
+    <div class="subheader">
+        <h1 class="subheader-title">
+            <i class='subheader-icon fal fa-table'></i> Inventory History
+        </h1>
+
+        <div class="subheader-block" id="loggedIn-user">
+            <i class='subheader-icon fal fa-table'></i> <%= "#{String.capitalize(@conn.assigns.user.first_name)}"%> <%= "#{String.capitalize(@conn.assigns.user.last_name)}"%>  | Invet_HUB
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div class="panel-hdr">
+                    <h2>
+                       <i class='subheader-icon fal fa-table'> Inventory History</i>
+                    </h2>
+
+                </div>
+
+                <div class="panel-container show">
+                    <div class="panel-content">
+
+                        <!-- datatable start -->
+                        <table id="dt-basic" class="table table-bordered table-hover table-striped w-100">
+                            <thead class="p-3 bg-primary-300 rounded overflow-hidden position-relative text-white mb-g">
+                                <tr>
+                                      <th>Quantity</th>
+                                      <th>Size (R)</th>
+                                      <th>price (ZMK)</th>
+                                      <th>Date Created</th>
+                                      <th>Last Modified</th>
+                                      <th>Stock_in</th>
+                                      <th>total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <%= for inventory <- @inventory do %>
+                                <tr>
+                                     <td><%= inventory.quantity %></td>
+                                     <td><%= inventory.size %></td>
+                                     <td><%= inventory.price %></td>
+                                      <td><%= inventory.inserted_at %></td>
+                                     <td><%= inventory.updated_at %></td>
+                                     <td><%= inventory.stock_in %></td>
+                                     <td><%= inventory.total %></td>
+                                </tr>
+                              <% end %>
+                            </tbody>
+                        </table>
+                        <!-- datatable end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+

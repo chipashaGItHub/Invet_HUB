@@ -1,0 +1,129 @@
+  <div class="subheader">
+     <h1 class="subheader-title">
+         <i class='subheader-icon fal fa-chart-area'></i> Invet_hub <span class='fw-300'>Dashboard</span>
+         <small>
+         </small>
+     </h1>
+ </div>
+
+<!-- Summary of goods per branch -->
+<div class="row">
+     <div class="col-sm-6 col-xl-2">
+            <div class="p-3 bg-primary-400 rounded overflow-hidden position-relative text-white mb-g">
+                <div class="">
+                    <h3 class="display-4 d-block l-h-n m-0 fw-500">
+                        Overall
+                        <small class="m-0 l-h-n text-center"><a class="btn btn-secondary btn-xs" href="<%= Routes.dashboard_path(@conn, :all)%>">View</a></small>
+                    </h3>
+                </div>
+                <i class="fal fa-gem position-absolute pos-right pos-bottom opacity-15 mb-n1 mr-n1" style="font-size:6rem"></i>
+            </div>
+        </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-primary-400 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-4 d-block l-h-n m-0 fw-500">
+                    Ibex hill
+                    <small class="m-0 l-h-n text-center"><a class="btn btn-secondary btn-xs" href="<%= Routes.dashboard_path(@conn, :ibex_hill)%>">View</a></small>
+                </h3>
+            </div>
+            <i class="fal fa-gem position-absolute pos-right pos-bottom opacity-15 mb-n1 mr-n1" style="font-size:6rem"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-primary-400 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-4 d-block l-h-n m-0 fw-500">
+                    Kabwata
+                    <small class="m-0 l-h-n text-center"><a class="btn btn-secondary btn-xs" href="<%= Routes.dashboard_path(@conn, :kabwata)%>">View</a></small>
+                </h3>
+            </div>
+            <i class="fal fa-gem position-absolute pos-right pos-bottom opacity-15  mb-n1 mr-n4" style="font-size: 6rem;"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-primary-400 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-4 d-block l-h-n m-0 fw-500">
+                    Soweto
+                    <small class="m-0 l-h-n text-center"><a class="btn btn-secondary btn-xs" href="<%= Routes.dashboard_path(@conn, :soweto)%>">View</a></small>
+                </h3>
+            </div>
+            <i class="fal fa-lightbulb position-absolute pos-right pos-bottom opacity-15 mb-n5 mr-n6" style="font-size: 8rem;"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-primary-400 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-4 d-block l-h-n m-0 fw-500">
+                    Lumumba
+                    <small class="m-0 l-h-n text-center"><a class="btn btn-secondary btn-xs" href="<%= Routes.dashboard_path(@conn, :lumumba)%>">View</a></small>
+                </h3>
+            </div>
+            <i class="fal fa-globe position-absolute pos-right pos-bottom opacity-15 mb-n1 mr-n4" style="font-size: 6rem;"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-primary-400 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-4 d-block l-h-n m-0 fw-500">
+                    Logs
+                    <small class="m-0 l-h-n text-center"><a class="btn btn-secondary btn-xs" href="<%= Routes.user_path(@conn, :system_logs)%>">View</a></small>
+                </h3>
+            </div>
+            <i class="fal fa-globe position-absolute pos-right pos-bottom opacity-15 mb-n1 mr-n4" style="font-size: 6rem;"></i>
+        </div>
+    </div>
+</div>
+ <div class="row">
+           <div class="col-xl-12">
+                  <div id="panel-1" class="panel">
+                      <div class="panel-hdr">
+                          <h2>
+                             Value Statistics Per Branch <span class="fw-300"><i></i></span>
+                          </h2>
+
+                      </div>
+                      <div class="panel-container show">
+                          <div class="panel-content">
+
+                                <h2 style="text-align: center">Value Statistics Per Branch</h2>
+                                <% pie_data = Poison.encode!([
+                                ["Kabwata",InvetHub.Inventory.Inventory.aggregate(:total, :sum, [branch: "Kabwata"])],
+                                ["Ibex Hill",InvetHub.Inventory.Inventory.aggregate(:total, :sum, [branch: "Ibex Hill"])],
+                                ["Soweto (Main Branch)",InvetHub.Inventory.Inventory.aggregate(:total, :sum, [branch: "Soweto (Main Branch)"])],
+                                ["Lumumba", InvetHub.Inventory.Inventory.aggregate(:total, :sum, [branch: "Lumumba"])]]) %>
+                                <%= raw Chartkick.pie_chart pie_data%><br><br>
+                          </div>
+                      </div>
+                  </div>
+          </div>
+    </div>
+ <div class="row">
+           <div class="col-xl-12">
+                  <div id="panel-1" class="panel">
+                      <div class="panel-hdr">
+                          <h2>
+                             Stock Statistics Per Branch  <span class="fw-300"><i></i></span>
+                          </h2>
+
+                      </div>
+                      <div class="panel-container show">
+                          <div class="panel-content">
+
+                                <h2 style="text-align: center">Stock Statistics Per Branch </h2>
+                                <% pie_data = Poison.encode!([
+                                ["Kabwata",InvetHub.Inventory.Inventory.aggregate(:quantity, :sum, [branch: "Kabwata"])],
+                                ["Ibex Hill",InvetHub.Inventory.Inventory.aggregate(:quantity, :sum, [branch: "Ibex Hill"])],
+                                ["Soweto (Main Branch)",InvetHub.Inventory.Inventory.aggregate(:quantity, :sum, [branch: "Soweto (Main Branch)"])],
+                                ["Lumumba", InvetHub.Inventory.Inventory.aggregate(:quantity, :sum, [branch: "Lumumba"])]]) %>
+                                <%= raw Chartkick.pie_chart pie_data%><br><br>
+                          </div>
+                      </div>
+                  </div>
+          </div>
+    </div>
+
+
+
+

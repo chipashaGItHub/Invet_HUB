@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="cuid" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/cuid/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/cuid/ebin" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/cuid/lib" />
+    </SOURCES>
+  </library>
+</component>

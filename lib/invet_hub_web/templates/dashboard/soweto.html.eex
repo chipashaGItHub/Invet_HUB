@@ -1,0 +1,155 @@
+
+<main id="js-page-content" role="main" class="page-content">
+<div class="subheader">
+        <h1 class="subheader-title">
+            <i class='subheader-icon fal fa-table'></i> Soweto Main Branch Dashboard
+        </h1>
+        <div class="subheader-block" id="loggedIn-user">
+            <i class='subheader-icon fal fa-table'></i> <%= "#{String.capitalize(@conn.assigns.user.first_name)}"%> <%= "#{String.capitalize(@conn.assigns.user.last_name)}"%>  | Invet_HuB
+        </div>
+</div>
+<div class="row">
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-success-600 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-6 d-block l-h-n m-0 fw-400">
+                    <%= @total_stock %>
+                    <small class="m-0 l-h-n">STOCK IN</small>
+                </h3>
+            </div>
+            <i class="fal fa-gem position-absolute pos-right pos-bottom opacity-15 mb-n1 mr-n1" style="font-size:6rem"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-success-600 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-6 d-block l-h-n m-0 fw-400">
+                      <%= @total_income %>
+                      <small class="m-0 l-h-n">TOTAL VALUE</small>
+                </h3>
+            </div>
+            <i class="fal fa-gem position-absolute pos-right pos-bottom opacity-15  mb-n1 mr-n4" style="font-size: 6rem;"></i>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-success-600 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-6 d-block l-h-n m-0 fw-400">
+                    <%= @difference %>
+                    <small class="m-0 l-h-n">STOCK SOLD</small>
+                </h3>
+            </div>
+            <i class="fal fa-globe position-absolute pos-right pos-bottom opacity-15 mb-n1 mr-n4" style="font-size: 6rem;"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="p-3 bg-success-600 rounded overflow-hidden position-relative text-white mb-g">
+            <div class="">
+                <h3 class="display-6 d-block l-h-n m-0 fw-400">
+                    <%= @returns %>
+                    <small class="m-0 l-h-n">RETURNS</small>
+                </h3>
+            </div>
+            <i class="fal fa-globe position-absolute pos-right pos-bottom opacity-15 mb-n1 mr-n4" style="font-size: 6rem;"></i>
+        </div>
+    </div>
+     <div class="col-sm-6 col-xl-2">
+                <div class="p-3 bg-success-600 rounded overflow-hidden position-relative text-white mb-g">
+                    <div class="">
+                        <h3 class="display-6 d-block l-h-n m-0 fw-400">
+                            <%= @expense %>
+                            <small class="m-0 l-h-n">VALUE SOLD</small>
+                        </h3>
+                    </div>
+                    <i class="fal fa-lightbulb position-absolute pos-right pos-bottom opacity-15 mb-n5 mr-n6" style="font-size: 8rem;"></i>
+                </div>
+            </div>
+       <div class="col-sm-6 col-xl-2">
+            <div class="p-3 bg-success-600 rounded overflow-hidden position-relative text-white mb-g">
+                <div class="">
+                    <h3 class="display-6 d-block l-h-n m-0 fw-400">
+                            <%= @last_modified %>
+                        <small class="m-0 l-h-n">LAST MODIFIED</small>
+                    </h3>
+                </div>
+                <i class="fal fa-globe position-absolute pos-right pos-bottom opacity-15 mb-n1 mr-n4" style="font-size: 6rem;"></i>
+            </div>
+        </div>
+
+</div>
+<!-- Summary of goods per branch -->
+
+
+    <!-- ####################################################### FLASH ################## -->
+    <div class="row">
+        <div class="col-md-12 col-lg-offset-2">
+            <div class="form-group">
+                <%= if get_flash(@conn, :info) do %>
+                    <div class="alert alert-info alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    <%= get_flash(@conn, :info) %>
+                    </div>
+                <% end %>
+                <%= if get_flash(@conn, :error) do %>
+                    <div class="alert alert-danger alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    Opps! <%= get_flash(@conn, :error) %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <!-- ################################################################################ -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div class="panel-hdr">
+                    <h2>
+                       <i class='subheader-icon fal fa-table'> Soweto Branch Report</i>
+                    </h2>
+                </div>
+
+                <div class="panel-container show">
+                    <div class="panel-content">
+
+                        <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                        <table id="dt-invet-table" class="table table-bordered table-hover table-striped w-100">
+                            <thead class="p-3 bg-primary-300 rounded overflow-hidden position-relative text-white mb-g">
+                                <tr>
+                                     <th>Branch</th>
+                                      <th>Quantity</th>
+                                      <th>Size (R)</th>
+                                      <th>price (ZMK)</th>
+                                      <th>Balance</th>
+                                      <th>Stock Sold</th>
+                                      <th>Value Sold</th>
+                                      <th>Returns</th>
+                                      <th>Date Created</th>
+                                      <th>Last Modified</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <%= for inventory <- @inventory do %>
+                                <tr>
+                                    <td><%= inventory.branch%></td>
+                                     <td><%= inventory.quantity %></td>
+                                     <td><%= inventory.size %></td>
+                                     <td><%= inventory.price %></td>
+                                     <td><%= inventory.balance %></td>
+                                      <td><%= inventory.difference %></td>
+                                      <td><%= inventory.expense %></td>
+                                      <td><%= inventory.returns %></td>
+                                      <td><%= "#{inventory.inserted_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+                                     <td><%= "#{inventory.updated_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+                               </tr>
+                                <% end %>
+                            </tbody>
+                        </table>
+                </div>
+            </div>
+        </div>
+    </div>
+   </div>
+</main>
+<!-- ############################################ ADD USER MODAL ######################################### -->

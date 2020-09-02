@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="date_time_parser" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/date_time_parser/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/date_time_parser/ebin" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/date_time_parser/lib" />
+    </SOURCES>
+  </library>
+</component>

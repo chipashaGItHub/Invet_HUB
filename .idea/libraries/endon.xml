@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="endon" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/endon/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/endon/ebin" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/endon/lib" />
+    </SOURCES>
+  </library>
+</component>

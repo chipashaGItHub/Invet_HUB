@@ -1,0 +1,76 @@
+<main id="js-page-content" role="main" class="page-content">
+    <!-- ####################################################### FLASH ################## -->
+    <div class="row">
+        <div class="col-md-12 col-lg-offset-2">
+            <div class="form-group">
+                <%= if get_flash(@conn, :info) do %>
+                    <div class="alert alert-info alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    <%= get_flash(@conn, :info) %>
+                    </div>
+                <% end %>
+                <%= if get_flash(@conn, :error) do %>
+                    <div class="alert alert-danger alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    Opps! <%= get_flash(@conn, :error) %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <!-- ################################################################################ -->
+    <div class="subheader">
+        <h1 class="subheader-title">
+            <i class='subheader-icon fal fa-user-circle'></i> System Logs
+        </h1>
+        <div class="subheader-block" id="loggedIn-user">
+            <i class='subheader-icon fal fa-user'></i> <%= "#{String.capitalize(@conn.assigns.user.first_name)}"%> <%= "#{String.capitalize(@conn.assigns.user.last_name)}"%>  | Invet_HUB
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div class="panel-hdr">
+                    <h2>
+                        System user logs <i class='subheader-icon fal fa-user-circle'></i>
+                    </h2>
+                    <div class="panel-toolbar">
+
+                    </div>
+                </div>
+
+                <div class="panel-container show">
+                    <div class="panel-content">
+
+                        <!-- datatable start -->
+                        <table id="dt-basic-example" class="table table-bordered table-hover table-striped w-100">
+                            <thead class="p-3 bg-primary-300 rounded overflow-hidden position-relative text-white mb-g">
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Activity</th>
+                                    <th>Date Created</th>
+                                    <th>Last Modified</th>
+                                    <th>Host</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <%= for log <- @logs do %>
+                                <tr>
+                                    <td><%= log.user_id %></td>
+                                    <td><%= log.activity %></td>
+                                    <td><%= "#{log.inserted_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+                                    <td><%= "#{log.updated_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+                                    <td><%= @conn.host %></td>
+                                </tr>
+                            <% end %>
+                            </tbody>
+                        </table>
+                        <!-- datatable end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+

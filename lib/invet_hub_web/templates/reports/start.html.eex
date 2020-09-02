@@ -1,0 +1,62 @@
+ <main id="js-page-content" role="main" class="page-content">
+     <div class="row">
+         <div class="col-md-12 col-lg-offset-2">
+             <div class="form-group">
+                 <%= if get_flash(@conn, :info) do %>
+                     <div class="alert alert-info alert-styled-left">
+                     <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                     <%= get_flash(@conn, :info) %>
+                     </div>
+                 <% end %>
+                 <%= if get_flash(@conn, :error) do %>
+                     <div class="alert alert-danger alert-styled-left">
+                     <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                     Opps! <%= get_flash(@conn, :error) %>
+                     </div>
+                 <% end %>
+             </div>
+         </div>
+     </div>
+
+        <div class="subheader">
+            <h1 class="subheader-title">
+                Enter: <span class='fw-300'>Branch</span>
+                <small>
+                    Enter Branch Name to view Reports
+                </small>
+            </h1>
+        </div>
+        <!-- input group search box
+        <div class="search">
+            <input type="text" class="form-control shadow-inset-2" name="branch" id="filter-icon" aria-label="type 2 or more letters">
+            <div class="input-group-append">
+               <a href="" class="input-group-text"> <i class="fal fa-search"></i>
+               </a>
+            </div>
+        </div> -->
+
+<div class="form-group">
+   <form class="form-horizontal" action="<%= Routes.reports_path(@conn, :index)%>" method="POST">
+      <label class="form-label">Select Branch</label>
+          <div class="input-group">
+              <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fal fa-qrcode"></i></span>
+                  <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+              </div>
+               <select class="custom-select form-control" name="branch" id="filter-icon">
+                  <option value="" disabled selected hidden>Select Branch</option>
+                  <%= for branch <- @branch do %>
+                  <option value="<%= branch.branch%>"><%= branch.branch %> </option>
+                  <% end %>
+              </select>
+
+               <div class="input-group-append">
+                  <button type="submit"  class="btn btn-primary">Select</button>
+              </div>
+             <!-- <input type="hidden" name="id" class="form-control" id="id" value=" >-->
+
+            </div>
+   </form>
+</div>
+                        <!-- end modal -->
+</main>

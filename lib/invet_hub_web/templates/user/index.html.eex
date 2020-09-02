@@ -1,0 +1,245 @@
+
+    <!-- ####################################################### FLASH ################## -->
+    <div class="row">
+        <div class="col-md-12 col-lg-offset-2">
+            <div class="form-group">
+                <%= if get_flash(@conn, :info) do %>
+                    <div class="alert alert-info alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    <%= get_flash(@conn, :info) %>
+                    </div>
+                <% end %>
+                <%= if get_flash(@conn, :error) do %>
+                    <div class="alert alert-danger alert-styled-left">
+                    <button type="button" class="close" data-dismiss="alert">&times; <span class="sr-only">Close</span></button>
+                    Opps! <%= get_flash(@conn, :error) %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <!-- ################################################################################ -->
+       <div class="subheader">
+           <h1 class="subheader-title">
+               <i class='subheader-icon fal fa-user-circle'></i> System Users
+           </h1>
+
+           <div class="subheader-block" id="loggedIn-user">
+               <i class='subheader-icon fal fa-user'></i> <%= "#{String.capitalize(@conn.assigns.user.first_name)}"%> <%= "#{String.capitalize(@conn.assigns.user.last_name)}"%>  | Invet_HUB
+           </div>
+       </div>
+
+       <div class="row">
+           <div class="col-xl-12">
+               <div id="panel-1" class="panel">
+                   <div class="panel-hdr">
+                       <h2>
+                          <i class='subheader-icon fal fa-user-circle'> View System users</i>
+                       </h2>
+                       <div class="panel-toolbar">
+                           <button class="btn btn-sm btn-primary waves-effect waves-themed" data-toggle="modal" data-target="#default-example-modal-lg-center">Add user</button>
+                       </div>
+                   </div>
+
+                   <div class="panel-container show">
+                       <div class="panel-content">
+
+                           <input type="hidden" name="csrf" id="csrf" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                           <table id="dt-users" class="table table-bordered table-hover table-striped w-100">
+                               <thead class="p-3 bg-primary-300 rounded overflow-hidden position-relative text-white mb-g">
+                                   <tr>
+                                        <th>Full Names</th>
+                                         <th>Profile</th>
+                                         <th>Email</th>
+                                         <th>Phone_Number</th>
+                                         <th>User_role</th>
+                                         <th>Status</th>
+                                         <th>Date Created</th>
+                                         <th>Last Modified</th>
+                                         <th>Actions</th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                               <%= for users_list <- user_lists() do %>
+                                   <tr>
+                                       <td><%= users_list.first_name%> <%= users_list.last_name %></td>
+                                        <td><%= users_list.profile %></td>
+                                        <td><%= users_list.email %></td>
+                                        <td><%= users_list.phone_number %></td>
+                                        <td><%= users_list.user_role %></td>
+                                        <td><%= users_list.status %></td>
+                                         <td><%= "#{users_list.inserted_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+                                        <td><%= "#{users_list.updated_at |> Calendar.DateTime.shift_zone!("Africa/Cairo") |> Calendar.Strftime.strftime!("%d-%b-%Y %H:%M:%S")}" %></td>
+
+                                       <td class="text-center">
+                                        <button class="btn btn-primary btn-xs" data-toggle="dropdown" style="margin-top:0px !important; padding-top: 0px !important;">Options</button>
+                                        <div class="dropdown-menu dropdown-menu-animated dropdown-menu-right position-absolute pos-top">
+                                            <a  href="<%= users_list.id%>" data-id="<%= users_list.id %>"  data-first_name="<%= users_list.first_name%>" data-last_name="<%= users_list.last_name%>" data-username="<%= users_list.username%>" data-phone_number="<%= users_list.phone_number%>" data-email="<%= users_list.email%>" data-profile="<%= users_list.profile %>" data-password="<%= users_list.password%>" class="dropdown-item text-primary"  data-toggle="modal"  data-target="#edit_modal">Edit</a>
+                                            <a href="#" data-user-id="<%= users_list.id %>" data-user-status="1" class="js-delete-user dropdown-item text-danger">Delete</a>
+
+                                        </div>
+                                    </td>
+                                   </tr>
+                                 <% end %>
+                               </tbody>
+                           </table>
+                           <!-- datatable end -->
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   <!-- ############################################ ADD USER MODAL ######################################### -->
+
+   <div class="modal fade" id="default-example-modal-lg-center" tabindex="-1" role="dialog" aria-hidden="true">
+       <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title">Add System User <i class='subheader-icon fal fa-user-circle'></i></h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                   </button>
+               </div>
+
+               <div class="modal-body">
+                   <form class="form-horizontal" action="<%= Routes.user_path(@conn, :add)%>" method="POST">
+                       <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                       <div class="form-group">
+                           <label class="form-label">User Information</label>
+                           <div class="input-group">
+                               <div class="input-group-prepend">
+                                   <span class="input-group-text"><i class="fal fa-user-circle"></i></span>
+                               </div>
+                               <input type="text" name="first_name" id="First_name" class="form-control" placeholder="First Name" required="required">
+                               <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last Name" required="required">
+                               <input type="number" name="phone_number" id="phone_number" class="form-control" placeholder="Mobile Number" required="required" minlength="3" maxlength="13">
+                           </div>
+                       </div>
+
+                       <div class="form-group">
+                       <label class="form-label">credentials</label>
+                       <div class="input-group">
+                           <div class="input-group-prepend">
+                               <span class="input-group-text"><i class="fal fa-user-alt"></i></span>
+                           </div>
+                               <input type="text" name="username" id="First_name" class="form-control" placeholder="Username" required="required">
+                               <input type="email" name="email" id="email" class="form-control" placeholder="Email Address" required="required">
+                               <input type="password" name="password" id="password" class="form-control" placeholder="Password" required="required">
+                       </div>
+                   </div>
+
+                      <div class="form-group">
+                       <label class="form-label">Profile Details</label>
+                       <div class="input-group">
+                           <div class="input-group-prepend">
+                               <span class="input-group-text"><i class="fal fa-briefcase"></i></span>
+                           </div>
+                           <input type="text" name="profile" class="form-control" id="profile" required="required">
+                           <input type="hidden" name="user_type" class="form-control" id="user_type" value="1" required="required">
+                           <input type="hidden" name="user_role" class="form-control" id="user_type" value="1" required="required">
+                           <input type="hidden" name="auto_password" class="form-control" id="auto_password" value="Y" required="required">
+                          <!-- <input type="hidden" name="id" class="form-control" id="id" value=" >-->
+
+                       </div>
+                       <div class="modal-footer">
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                           <button type="submit" class="btn btn-primary">Add User</button>
+                       </div>
+                       </div>
+                   </form>
+               </div>
+           </div>
+       </div>
+   </div>
+   <!-- ############################################# EDIT USER MODAL ###################################### -->
+    <%= for users <- user_lists() do %>
+   <div class="modal fade" id="edit_modal" tabindex="-1" role="dialog" aria-hidden="true">
+       <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title">Add System User <i class='subheader-icon fal fa-user-circle'></i></h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                   </button>
+               </div>
+
+               <div class="modal-body">
+                   <form class="form-horizontal" action="<%= Routes.user_path(@conn, :update)%>" method="POST">
+                       <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token()%>">
+                       <div class="form-group">
+                           <label class="form-label">User Information</label>
+                           <div class="input-group">
+                               <div class="input-group-prepend">
+                                   <span class="input-group-text"><i class="fal fa-user-circle"></i></span>
+                               </div>
+                               <input type="hidden" name="id" id="id" value="<%= users.id %>" required="required">
+                               <input type="text" name="first_name" id="First_name" class="form-control" placeholder="First Name" value="<%= users.first_name %>" required="required">
+                               <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last Name" value="<%= users.last_name %>" required="required">
+                               <input type="number" name="phone_number" id="phone_number" class="form-control" placeholder="Mobile Number" value="<%= users.phone_number %>" required="required" minlength="3" maxlength="13">
+                           </div>
+                       </div>
+
+                       <div class="form-group">
+                       <label class="form-label">credentials</label>
+                       <div class="input-group">
+                           <div class="input-group-prepend">
+                               <span class="input-group-text"><i class="fal fa-user-alt"></i></span>
+                           </div>
+                               <input type="text" name="username" id="First_name" class="form-control" placeholder="Username" value="<%= users.username %>" required="required">
+                               <input type="email" name="email" id="email" class="form-control" placeholder="Email Address" value="<%= users.email %>" required="required">
+                               <input type="password" name="password" id="password" class="form-control" placeholder="Password" value="<%= users.password %>" required="required">
+                       </div>
+                   </div>
+
+                      <div class="form-group">
+                       <label class="form-label">Profile Details</label>
+                       <div class="input-group">
+                           <div class="input-group-prepend">
+                               <span class="input-group-text"><i class="fal fa-briefcase"></i></span>
+                           </div>
+                           <input type="text" name="profile" class="form-control" id="profile" value="<%= users.profile %>" required="required">
+                           <input type="hidden" name="user_type" class="form-control" id="user_type" value="1" required="required">
+                           <input type="hidden" name="user_role" class="form-control" id="user_type" value="1" required="required">
+                          <!-- <input type="hidden" name="id" class="form-control" id="id" value=" >-->
+
+                       </div>
+                       <div class="modal-footer">
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                           <button type="submit" class="btn btn-primary">Update User</button>
+                       </div>
+                       </div>
+                   </form>
+               </div>
+           </div>
+       </div>
+   </div>
+   <% end %>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="<%= Routes.static_path(@conn, "/js/jquery.js") %>"></script>
+   <script>
+   $(document).ready(function(){
+   //Deactivate msg Account
+     $('#edit_modal').on('show.bs.modal', function (event){
+       var button = $(event.relatedTarget)
+       var id = button.data('id')
+       var first_name = button.data('first_name')
+       var last_name = button.data('last_name')
+       var password = button.data('password')
+       var email = button.data('email')
+       var profile = button.data('profile')
+       var phone_number = button.data('phone_number')
+       var username = button.data('username')
+
+       var modal = $(this)
+       modal.find('.modal-body #id').val(id);
+       modal.find('.modal-body #first_name').val(first_name);
+       modal.find('.modal-body #last_name').val(last_name);
+       modal.find('.modal-body #password').val(password);
+       modal.find('.modal-body #email').val(email);
+       modal.find('.modal-body #profile').val(profile);
+       modal.find('.modal-body #phone_number').val(phone_number);
+       modal.find('.modal-body #username').val(username);
+     });
+   });
+   </script>
